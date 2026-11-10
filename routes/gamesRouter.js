@@ -1,8 +1,11 @@
 import express from "express";
-import { getVideoGamesByName } from "../controllers/gameController.js";
+import {
+  getVideoGamesByName,
+  addVideoGameToWishlist,
+} from "../controllers/gameController.js";
 
 export const gamesRouter = express.Router();
 
-gamesRouter.route("/:name").post(getVideoGamesByName);
-
+gamesRouter.route("/:name").get(getVideoGamesByName);
+gamesRouter.route("/wish-list").post(addVideoGameToWishlist);
 export default gamesRouter;

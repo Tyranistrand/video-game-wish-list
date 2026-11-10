@@ -1,11 +1,13 @@
 import axios from "axios";
+import slugify from "slugify";
 
-const tokenStorage = {
-  token: null,
-  expiration: 0,
-};
+// const tokenStorage = {
+//   token: null,
+//   expiration: 0,
+// };
 
-//gameController helper functions
+/**
+IGDB GetAuth function. Commenting in case I use this again
 const getAuthToken = async () => {
   try {
     const response = await axios.post(
@@ -19,35 +21,25 @@ const getAuthToken = async () => {
     });
   }
 };
+*/
 
-const capitalizeGameName = (videoGameName) => {
-  return videoGameName[0].toUpperCase() + videoGameName.slice(1);
+const getFormattedVideoGameName = (videoGameName) => {
+  const formattedName = slugify(videoGameName, {
+    lower: true,
+  });
+  return formattedName;
 };
 
 export const getVideoGamesByName = async (req, res) => {
-  const videoGameName = capitalizeGameName(req.params.name);
-  console.log(tokenStorage.token);
+  const videoGame = getFormattedVideoGameName(req.params.name);
   try {
-    if (tokenStorage.token === null) {
-      tokenStorage.token = await getAuthToken();
-    }
-    const data = `fields name,id,cover.image_id; search "${videoGameName}"; limit 50;`;
     const config = {
-      method: "post",
+      method: "get",
       maxBodyLength: Infinity,
-      url: "https://api.igdb.com/v4/games",
-      headers: {
-        "Client-ID": process.env.CLIENT_ID,
-        Authorization: `Bearer ${tokenStorage.token}`,
-      },
-      data: data,
+      url: `https://api.gg.deals/v1/prices/by-slug/?slugs=${videoGame}&key=${process.env.DEALS_API_KEY}&region=us`,
     };
     const response = await axios.request(config);
-    if (response.status === 401) {
-      tokenStorage.token = await getAuthToken();
-    }
-    res.status(200).json({
-      message: "success",
+    response.data.videoGame.id = res.status(200).json({
       data: response.data,
     });
   } catch (error) {
@@ -57,4 +49,10 @@ export const getVideoGamesByName = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+export const addVideoGameToWishlist = (req, res) => {
+  console.log(
+    "Placeholder for adding games to the wishlist for specific users",
+  );
 };
