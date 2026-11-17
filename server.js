@@ -25,7 +25,7 @@ app.use(express.json());
 app.use("/users", usersRouter);
 app.use("/video-games", gamesRouter);
 
-app.all("*", (req, res, next) => {
+app.all("/{*any}", (req, res, next) => {
   res.status(404).json({
     status: "Fail",
     message: "Could not find desired resource",

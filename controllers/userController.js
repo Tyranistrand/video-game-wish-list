@@ -2,12 +2,13 @@ import { User } from "../models/userModel.js";
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.findAll({});
+    const users = await User.find({});
     res.status(200).json({
       message: "success",
       data: users,
     });
   } catch (err) {
+    console.log(err);
     res.status(400).json({
       message: "error",
       error: err,

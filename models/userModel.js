@@ -14,7 +14,6 @@ const usersSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    min: [16, "Password must be at least 16 characters"],
   },
   createdOn: {
     type: Date,
@@ -26,10 +25,11 @@ const usersSchema = new mongoose.Schema({
   },
 });
 
-usersSchema.pre("save", async function () {
+usersSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 12);
   }
+  next();
 });
 
 export const User = mongoose.model("User", usersSchema);
