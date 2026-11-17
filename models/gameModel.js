@@ -1,17 +1,18 @@
-import { Double } from "mongodb";
+import { Decimal128, Double } from "mongodb";
 import mongoose from "mongoose";
 
 const gamesSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   dateAdded: {
     type: Date,
     default: new Date().toISOString(),
   },
   currentPrice: {
-    type: Double,
+    type: Number,
     required: false,
   },
 });
