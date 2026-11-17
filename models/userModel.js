@@ -5,15 +5,18 @@ import validator from "validator";
 const usersSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
     validate: [validator.isAlpha, "Name must be confined to letters A-Z"],
   },
   email: {
     type: String,
+    required: true,
     unique: true,
     validate: [validator.isEmail, "Email must be a valid email address"],
   },
   password: {
     type: String,
+    required: true,
   },
   createdOn: {
     type: Date,
