@@ -3,14 +3,27 @@ import bcrypt from "bcrypt";
 import validator from "validator";
 
 const usersSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    validate: [validator.isAlpha, "Name must be confined to letters A-Z"],
+  },
   email: {
     type: String,
     unique: true,
     validate: [validator.isEmail, "Email must be a valid email address"],
   },
-  password: String,
-  createdOn: { type: Date, default: Date.now },
-  ipAddress: String,
+  password: {
+    type: String,
+    min: [16, "Password must be at least 16 characters"],
+  },
+  createdOn: {
+    type: Date,
+    default: Date.now,
+  },
+  wishlist: {
+    type: Array,
+    default: [],
+  },
 });
 
 usersSchema.pre("save", async function () {

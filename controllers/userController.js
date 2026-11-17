@@ -5,7 +5,7 @@ export const getUsers = async (req, res) => {
     const users = await User.findAll({});
     res.status(200).json({
       message: "success",
-      data: "LIST OF USERS...",
+      data: users,
     });
   } catch (err) {
     res.status(400).json({
@@ -15,25 +15,32 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const createUser = async (req, res) => {
+export const createAccount = async (req, res) => {
   const { email, password } = req.body;
-  const ipAddress = req.ip;
-  const userExists = await User.exists({ email: email });
-  if (userExists) {
-    return res.status(400).json({
-      status: "error",
-      message: "An account with this email already exists",
+
+  try {
+    const userExists = await User.exists({ email: email });
+
+    if (userExists) {
+      return res.status(400).json({
+        status: "error",
+        message: "An account with this email already exists",
+      });
+    }
+    await User.create({
+      email: email,
+      password: password,
+    });
+
+    res.status(201).json({
+      status: "Success",
+      message: "Create successfully created",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "Failure",
+      message: "Internal Server Error",
     });
   }
-  await User.create({
-    email: email,
-    password: password,
-    ipAddress: ipAddress,
-  });
-  res.status(200).json({
-    message: "Successfully created user",
-    date: {
-      email: email,
-    },
-  });
 };
