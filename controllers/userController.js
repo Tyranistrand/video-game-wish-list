@@ -16,32 +16,20 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const createAccount = async (req, res) => {
-  const { email, password } = req.body;
-
+export const getUser = async (req, res) => {
   try {
-    const userExists = await User.exists({ email: email });
-
-    if (userExists) {
-      return res.status(400).json({
-        status: "error",
-        message: "An account with this email already exists",
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        status: "Failure",
+        message: "User with the entered ID does not exist",
       });
     }
-    await User.create({
-      email: email,
-      password: password,
-    });
-
-    res.status(201).json({
+    res.status(200).json({
       status: "Success",
-      message: "Create successfully created",
+      message: user,
     });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      status: "Failure",
-      message: error.message,
-    });
+    console.log(err);
   }
 };

@@ -66,8 +66,8 @@ export const getVideoGamesByName = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({
-      message: "Internal Server Error",
+    res.status(400).json({
+      message: "Failure",
       error: error.message,
     });
   }

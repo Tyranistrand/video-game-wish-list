@@ -6,17 +6,27 @@ const usersSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please enter a name"],
-    validate: [validator.isAlpha, "Name must be confined to letters A-Z"],
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "Email address is required"],
     unique: true,
     validate: [validator.isEmail, "Email must be a valid email address"],
   },
   password: {
     type: String,
-    required: true,
+    required: [true, "Password is requried"],
+  },
+  confirmPassword: {
+    type: String,
+    required: [true, "Please confirm password"],
+    validate: {
+      //This only works on CREATE & SAVE!!!
+      validator: function (el) {
+        return el == this.password;
+      },
+      message: "Passwords do not match",
+    },
   },
   createdOn: {
     type: Date,
@@ -29,10 +39,9 @@ const usersSchema = new mongoose.Schema({
 });
 
 usersSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 12);
-  }
-  next();
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 12);
+  this.confirmPassword = undefined;
 });
 
 export const User = mongoose.model("User", usersSchema);
