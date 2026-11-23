@@ -10,7 +10,12 @@ export const signup = async (req, res) => {
         message: "An account with this email already exists",
       });
     }
-    await User.create(req.body);
+    await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      confirmPassword: req.body.confirmPassword,
+    });
 
     res.status(201).json({
       status: "Success",
@@ -23,4 +28,10 @@ export const signup = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email: email });
+  if (!user || user.password) return;
 };
