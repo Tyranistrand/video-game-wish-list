@@ -1,4 +1,5 @@
 import { User } from "../models/userModel.js";
+import jwt from "jsonwebtoken";
 
 export const signup = async (req, res) => {
   try {
@@ -10,16 +11,22 @@ export const signup = async (req, res) => {
         message: "An account with this email already exists",
       });
     }
-    await User.create({
+    const newUser = await User.create({
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
       confirmPassword: req.body.confirmPassword,
     });
 
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRATION,
+    });
+
     res.status(201).json({
       status: "Success",
-      message: "Create successfully created",
+      token: token,
+      expires_in: token.expiresIn,
+      data: newUser,
     });
   } catch (error) {
     console.log(error);
@@ -32,6 +39,34 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email: email });
-  if (!user || user.password) return;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      status: "Failure",
+      message: "Please provide an email and password",
+    });
+  }
+  const requestedUser = await User.findOne({ email: email });
+  if (!requestedUser) {
+    return res.status(404).json({
+      status: "Failure",
+      message: "Email does not exist in our system",
+    });
+  }
+
+  const isPasswordMatch = await requestedUser.comparePassword(password);
+  if (!isPasswordMatch) {
+    return res.status(401).json({
+      status: "Failure",
+      message: "Invalid password",
+    });
+  }
+  delete requestedUser.password;
+  const token = "fake token";
+  //Password validation
+  res.status(200).json({
+    status: "Success",
+    token,
+    user: requestedUser,
+  });
 };
