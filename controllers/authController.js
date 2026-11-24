@@ -46,27 +46,23 @@ export const login = async (req, res) => {
       message: "Please provide an email and password",
     });
   }
-  const requestedUser = await User.findOne({ email: email });
-  if (!requestedUser) {
-    return res.status(404).json({
+  const requestedUser = await User.findOne({ email: email }).select(
+    "+password",
+  );
+
+  if (!requestedUser || !(await requestedUser.comparePassword(password))) {
+    return res.status(401).json({
       status: "Failure",
-      message: "Email does not exist in our system",
+      message: "Email or password incorrect",
     });
   }
 
-  const isPasswordMatch = await requestedUser.comparePassword(password);
-  if (!isPasswordMatch) {
-    return res.status(401).json({
-      status: "Failure",
-      message: "Invalid password",
-    });
-  }
-  delete requestedUser.password;
-  const token = "fake token";
-  //Password validation
+  const token = jwt.sign({ id: requestedUser._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRATION,
+  });
+
   res.status(200).json({
     status: "Success",
     token,
-    user: requestedUser,
   });
 };

@@ -16,6 +16,7 @@ const usersSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password is requried"],
+    select: false,
   },
   confirmPassword: {
     type: String,
@@ -27,6 +28,7 @@ const usersSchema = new mongoose.Schema({
       },
       message: "Passwords do not match",
     },
+    select: false,
   },
   createdOn: {
     type: Date,
@@ -44,8 +46,8 @@ usersSchema.pre("save", async function (next) {
   this.confirmPassword = undefined;
 });
 
-usersSchema.methods.comparePassword = async function (password) {
-  const isCorrect = await bcrypt.compare(password, this.password);
+usersSchema.methods.comparePassword = async function (candidatePassword) {
+  const isCorrect = await bcrypt.compare(candidatePassword, this.password);
   return isCorrect;
 };
 
