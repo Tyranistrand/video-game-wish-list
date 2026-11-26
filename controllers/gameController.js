@@ -45,7 +45,7 @@ export const getVideoGamesByName = async (req, res) => {
     if (tokenStorage.token === null) {
       tokenStorage.token = await getAuthToken();
     }
-    const data = `fields name,id,cover.image_id; search "${videoGameName}"; limit 10;`;
+    const data = `fields name,id,cover.image_id; search "${videoGameName}"; limit 20;`;
     const config = {
       method: "post",
       maxBodyLength: Infinity,
