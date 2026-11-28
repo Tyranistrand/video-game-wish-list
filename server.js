@@ -4,6 +4,7 @@ import { MongoClient } from "mongodb";
 import mongoose from "mongoose";
 import { usersRouter } from "./routes/usersRouter.js";
 import { gamesRouter } from "./routes/gamesRouter.js";
+import { wishlistRouter } from "./routes/wishlistRouter.js";
 
 const mongoURI = process.env.MONGODB_URI.replace(
   "USERNAME",
@@ -24,6 +25,7 @@ const app = express();
 app.use(express.json());
 app.use("/users", usersRouter);
 app.use("/video-games", gamesRouter);
+app.use("/wishlist", wishlistRouter);
 
 app.all("/{*any}", (req, res, next) => {
   res.status(404).json({
